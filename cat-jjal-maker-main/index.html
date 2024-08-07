@@ -42,26 +42,31 @@
     }
 
     const Form = ({ handleFormSubmit }) => {
+      const [value, setValue] = React.useState('')
+
+      function handleInputChange(e) {
+        setValue(e.target.value.toUpperCase())
+      }
+
       return (
         <form onSubmit={handleFormSubmit}>
-          <input type="text" name="name" placeholder="영어 대사를 입력해주세요" />
+          <input type="text" name="name"
+            placeholder="영어 대사를 입력해주세요"
+            onChange={handleInputChange}
+            value={value}
+          />
           <button type="submit" >생성</button>
         </form>
       )
     }
 
 
-    const MainCard = ({ img }) => {
-      function handleHeartClick() {
-        console.log('하트눌렸음')
-      }
-      function handleHeartMouseOver() {
-        console.log('하트스쳐지나감')
-      }
+    const MainCard = ({ img, handleHeartClick }) => {
+
       return (
         <div className="main-card">
           <img src={img} alt="고양이" width="400" />
-          <button onClick={handleHeartClick} onMouseOver={handleHeartMouseOver}>🤍</button>
+          <button onClick={handleHeartClick}>🤍</button>
         </div>
       )
     }
@@ -74,11 +79,12 @@
       )
     }
 
-    function Favorites() {
+    function Favorites({ favorites }) {
       return (
         <ul className="favorites">
-          <CatItem img="https://cataas.com/cat/BxqL2EjFmtxDkAm2/says/inflearn" title="cat1" />
-          <CatItem img="https://cataas.com/cat/18MD6byVC1yKGpXp/says/JavaScript" title="cat2" />
+          {favorites.map(cat => (
+            <CatItem img={cat} key={cat} />
+          ))}
         </ul>
       )
     }
@@ -93,20 +99,26 @@
       // const setCounter = counter[1]
       const [counter, setCounter] = React.useState(1)
       const [mainCat, setMainCat] = React.useState(CAT1)
+      const [favorites, setFavorites] = React.useState([CAT1, CAT2])
       console.log("카운터", counter)
 
       function handleFormSubmit(event) {
         event.preventDefault()
         console.log('폼 전송됨')
-        setCounter(counter + 1)
-        setMainCat(CAT2)
+        setCounter(counter + 1) // n번째 고양이 가라사대의 n
+        setMainCat(CAT2) // 다음 고양이 사진으로 변경
+      }
+
+      function handleHeartClick() {
+        console.log('하트눌렸음')
+        setFavorites([...favorites, CAT3])
       }
       return (
         <div>
           <Title>{counter}번째 고양이 가라사대</Title>
           <Form handleFormSubmit={handleFormSubmit} />
-          <MainCard img={mainCat} />
-          <Favorites />
+          <MainCard img={mainCat} handleHeartClick={handleHeartClick} />
+          <Favorites favorites={favorites} />
         </div>
       )
     }
