@@ -88,7 +88,6 @@
 
 
     const MainCard = ({ img, onHeartClick }) => {
-
       return (
         <div className="main-card">
           <img src={img} alt="고양이" width="400" />
@@ -124,7 +123,7 @@
       // const count = counter[0]
       // const setCounter = counter[1]
       const [counter, setCounter] = React.useState(
-        jsonLocalStorage.getItem("counter")
+        jsonLocalStorage.getItem("counter") || 1
       )
       const [mainCat, setMainCat] = React.useState(CAT1)
       const [favorites, setFavorites] = React.useState(
