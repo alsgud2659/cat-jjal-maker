@@ -94,11 +94,12 @@
     }
 
 
-    const MainCard = ({ img, onHeartClick }) => {
+    const MainCard = ({ img, onHeartClick, alreadyFavorite }) => {
+      const heartIcon = alreadyFavorite ? "💖" : "🤍"
       return (
         <div className="main-card">
           <img src={img} alt="고양이" width="400" />
-          <button onClick={onHeartClick}>🤍</button>
+          <button onClick={onHeartClick}>{heartIcon}</button>
         </div>
       )
     }
@@ -112,6 +113,10 @@
     }
 
     function Favorites({ favorites }) {
+      if (favorites.length === 0) {
+        return <div>사진 위 하트를 눌러 고양이 사진을 저장해봐요!</div>
+      }
+
       return (
         <ul className="favorites">
           {favorites.map(cat => (
@@ -126,16 +131,17 @@
       const CAT2 = "https://cataas.com/cat/BxqL2EjFmtxDkAm2/says/inflearn";
       const CAT3 = "https://cataas.com/cat/18MD6byVC1yKGpXp/says/JavaScript";
       // 비구조화 할당으로 선언
-      // const counter = React.useState(1)
-      // const count = counter[0]
-      // const setCounter = counter[1]
-      const [counter, setCounter] = React.useState(
-        jsonLocalStorage.getItem("counter") || 1
-      )
+      const [counter, setCounter] = React.useState(() => {
+        return jsonLocalStorage.getItem("counter")
+      })
       const [mainCat, setMainCat] = React.useState(CAT1)
-      const [favorites, setFavorites] = React.useState(
-        jsonLocalStorage.getItem("favorites") || []
-      )
+
+      // useState의 인자를 함수로 넘겨주게되면 첫렌더링에 한번만 실행된다.
+      const [favorites, setFavorites] = React.useState(() => {
+        return jsonLocalStorage.getItem("favorites") || []
+      })
+
+      const alreadyFavorite = favorites.includes(mainCat)
 
       async function setInitialCat() {
         const newCat = await fetchCat('First cat')
@@ -144,15 +150,21 @@
 
       React.useEffect(() => {
         setInitialCat()
-      }, [])
+      }, []) // 두번째 인자가 빈배열인 경우 컴포넌트가 렌더링 될때 실행된다
+      // 배열에 값을 넣으면 그 값이 변경될 때 마다 useEffect가 실행된다.
 
       async function updateMainCat(value) {
         const newCat = await fetchCat(value)
 
         setMainCat(newCat) // 다음 고양이 사진으로 변경
-        const nextCounter = counter + 1
-        setCounter(counter + 1) // n번째 고양이 가라사대의 n
-        jsonLocalStorage.setItem("counter", nextCounter)
+
+        // set함수의 인자를 값으로 넘겨주게되면 그 값이 씹히는 현상이 있는데
+        // 인자를 함수로 넘겨주게 되면 값이 씹히는 현상이 없어진다.
+        setCounter((prev) => {
+          const nextCounter = prev + 1
+          jsonLocalStorage.setItem("counter", nextCounter)
+          return nextCounter
+        })
       }
 
       function handleHeartClick() {
@@ -160,11 +172,13 @@
         setFavorites(nextFavorites)
         jsonLocalStorage.setItem("favorites", nextFavorites)
       }
+
+      const counterTitle = counter === null ? '' : counter + '번째 '
       return (
         <div>
-          <Title>{counter}번째 고양이 가라사대</Title>
+          <Title>{counterTitle}고양이 가라사대</Title>
           <Form updateMainCat={updateMainCat} />
-          <MainCard img={mainCat} onHeartClick={handleHeartClick} />
+          <MainCard img={mainCat} onHeartClick={handleHeartClick} alreadyFavorite={alreadyFavorite} />
           <Favorites favorites={favorites} />
         </div>
       )
