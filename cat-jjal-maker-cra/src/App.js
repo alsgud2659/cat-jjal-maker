@@ -1,6 +1,8 @@
-import './App.css';
+import './App.css'
 import React from 'react'
 import Title from './components/Title'
+import Favorites from './components/Favorites'
+import MainCard from './components/MainCard'
 
 const jsonLocalStorage = {
   setItem: (key, value) => {
@@ -52,39 +54,6 @@ const Form = ({ updateMainCat }) => {
       <button type="submit" >생성</button>
       <p style={{ color: "red" }}>{errorMessage}</p>
     </form>
-  )
-}
-
-
-const MainCard = ({ img, onHeartClick, alreadyFavorite }) => {
-  const heartIcon = alreadyFavorite ? "💖" : "🤍"
-  return (
-    <div className="main-card">
-      <img src={img} alt="고양이" width="400" />
-      <button onClick={onHeartClick}>{heartIcon}</button>
-    </div>
-  )
-}
-
-function CatItem(props) {
-  return (
-    <li>
-      <img src={props.img} style={{ width: "150px" }} />
-    </li>
-  )
-}
-
-function Favorites({ favorites }) {
-  if (favorites.length === 0) {
-    return <div>사진 위 하트를 눌러 고양이 사진을 저장해봐요!</div>
-  }
-
-  return (
-    <ul className="favorites">
-      {favorites.map(cat => (
-        <CatItem img={cat} key={cat} />
-      ))}
-    </ul>
   )
 }
 
