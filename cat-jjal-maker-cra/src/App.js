@@ -3,6 +3,7 @@ import React from 'react'
 import Title from './components/Title'
 import Favorites from './components/Favorites'
 import MainCard from './components/MainCard'
+import Form from './components/Form'
 
 const jsonLocalStorage = {
   setItem: (key, value) => {
@@ -20,47 +21,9 @@ const fetchCat = async (text) => {
   return `${OPEN_API_DOMAIN}/cat/${responseJson._id}/says/${text}`; // NOTE: API 스펙 변경으로 강의 영상과 다른 URL로 변경했습니다.
 };
 
-const Form = ({ updateMainCat }) => {
-  const includesHangul = (text) => /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/i.test(text);
-  const [value, setValue] = React.useState('')
-  const [errorMessage, setErrorMessage] = React.useState('')
-
-  function handleInputChange(e) {
-    const userValue = e.target.value
-    setErrorMessage('')
-    if (includesHangul(userValue)) {
-      setErrorMessage('한글은 입력할 수 없습니다.')
-    }
-    setValue(userValue.toUpperCase())
-  }
-
-  function handleFormSubmit(e) {
-    e.preventDefault()
-    setErrorMessage('')
-    if (value === '') {
-      setErrorMessage('빈 값으로 만들 수 없습니다.')
-      return
-    }
-    updateMainCat(value)
-  }
-
-  return (
-    <form onSubmit={handleFormSubmit}>
-      <input type="text" name="name"
-        placeholder="영어 대사를 입력해주세요"
-        onChange={handleInputChange}
-        value={value}
-      />
-      <button type="submit" >생성</button>
-      <p style={{ color: "red" }}>{errorMessage}</p>
-    </form>
-  )
-}
-
 const App = () => {
   const CAT1 = "https://cataas.com/cat/HSENVDU4ZMqy7KQ0/says/react";
-  const CAT2 = "https://cataas.com/cat/BxqL2EjFmtxDkAm2/says/inflearn";
-  const CAT3 = "https://cataas.com/cat/18MD6byVC1yKGpXp/says/JavaScript";
+
   // 비구조화 할당으로 선언
   const [counter, setCounter] = React.useState(() => {
     return jsonLocalStorage.getItem("counter")
